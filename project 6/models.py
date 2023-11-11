@@ -27,6 +27,7 @@ class PerceptronModel(object):
         Returns: a node containing a single number (the score)
         """
         "*** YOUR CODE HERE ***"
+        return nn.DotProduct(x, self.w)
 
     def get_prediction(self, x):
         """
@@ -35,13 +36,28 @@ class PerceptronModel(object):
         Returns: 1 or -1
         """
         "*** YOUR CODE HERE ***"
+        cost = nn.as_scalar(self.run(x))
+        if cost >= 0:
+            return 1
+        else:
+            return -1
 
     def train(self, dataset):
         """
         Train the perceptron until convergence.
         """
         "*** YOUR CODE HERE ***"
-
+        terminate = False
+        while (terminate == False):
+            mislabel = 0
+            batch_size = 1
+            for x, y in dataset.iterate_once(batch_size):
+                if self.get_prediction(x) != nn.as_scalar(y):
+                    self.w.update(nn.Constant(nn.as_scalar(y) * x.data), 1)
+                    mislabel += 1
+            if mislabel == 0:
+                terminate = True
+        
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
