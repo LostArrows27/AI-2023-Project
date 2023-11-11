@@ -57,7 +57,7 @@ def sentence1() -> Expr:
     first = disjoin(A, B) 
     second = ~A % (~B | C) 
     third = disjoin(~A, ~B, C)  
-    util.raiseNotDefined()
+    
 
     "*** END YOUR CODE HERE ***"
     return conjoin(first, second, third)
@@ -82,7 +82,7 @@ def sentence2() -> Expr:
     third = (~(B & ~C)) >> A
     fourth = ~D >> C
     
-    util.raiseNotDefined()
+    
     "*** END YOUR CODE HERE ***"
     return conjoin(first, second, third, fourth)
 
@@ -108,7 +108,7 @@ def sentence3() -> Expr:
     first = pa1 % ((pa0 & ~pk0) | (~pa0 & pb0))
     second = ~(pa0 & pb0)
     third = pb0
-    util.raiseNotDefined()
+    
     "*** END YOUR CODE HERE ***"
     return conjoin(first, second, third) 
 
@@ -123,36 +123,38 @@ def findModelUnderstandingCheck() -> Dict[Expr, bool]:
     """Returns the result of findModel(Expr('a')) if lower cased expressions were allowed.
     You should not use findModel or Expr in this method.
     """
-    a = Expr('A')
-    "*** BEGIN YOUR CODE HERE ***"
-    print("a.__dict__ is:", a.__dict__) # might be helpful for getting ideas
-    util.raiseNotDefined()
     
+    "*** BEGIN YOUR CODE HERE ***"
+    a = 'A'
+    class Clone:
+        
+        def __init__(self,value:a):
+            self.value = value
+        
+        def __repr__(self):
+            return self.value
+    
+   
     "*** END YOUR CODE HERE ***"
-    return {a: True}
+    return {Clone('a'):True}
    
 
 def entails(premise: Expr, conclusion: Expr) -> bool:
     """Returns True if the premise entails the conclusion and False otherwise.
     """
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    "*** END YOUR CODE HERE ***"
     result = ~conclusion & premise
     
-    if (findModel(result) == False):
-        return True
-    else:
-        return False
+    "*** END YOUR CODE HERE ***"
+    return True if not findModel(result) else False
 
 def plTrueInverse(assignments: Dict[Expr, bool], inverse_statement: Expr) -> bool:
     """Returns True if the (not inverse_statement) is True given assignments and False otherwise.
     pl_true may be useful here; see logic.py for its description.
     """
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
     "*** END YOUR CODE HERE ***"
-
     return pl_true(~inverse_statement, assignments)
 
 #______________________________________________________________________________
@@ -178,8 +180,10 @@ def atLeastOne(literals: List[Expr]) -> Expr:
     True
     """
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+  
     "*** END YOUR CODE HERE ***"
+    return disjoin(literals)
 
 
 def atMostOne(literals: List[Expr]) -> Expr:
