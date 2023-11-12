@@ -404,8 +404,37 @@ def positionLogicPlan(problem) -> List:
     KB = []
 
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    KB.append(PropSymbolExpr(pacman_str, x0, y0, time=0))
+
+    # for t in range(50) [Autograder will not test on layouts requiring ≥50 timesteps]
+    for t in range(50):
+        
+        all_locations = [PropSymbolExpr(pacman_str, x, y, time=t) for (x, y) in non_wall_coords]
+        KB.append(exactlyOne(all_locations))
+
+        # Add to KB: Pacman takes exactly one action per timestep.
+        # As we mentioned before we will take all actions and then call exactlyOne.
+        all_actions = [PropSymbolExpr(action, time=t) for action in actions]
+        KB.append(exactlyOne(all_actions))
+
+        # Add to KB: Transition Model sentences: call pacmanSuccessorAxiomSingle(...) for all possible pacman positions in non_wall_coords.
+        # Check that the time is not the 0 because we don't have successors in that time then create the requested list and append it to the KB.
+        if t != 0:
+            KB += [pacmanSuccessorAxiomSingle(x, y, time=t, walls_grid=walls_grid) for (x, y) in non_wall_coords]
+
+        # Construct the model using the findModel and the goal state given the x,y of the goal in the beginning of the function.
+        model = findModel(conjoin(conjoin(KB), PropSymbolExpr(pacman_str, xg, yg, time=t)))
+
+        # Is there a satisfying assignment for the variables given the knowledge base so far? 
+        # Use findModel and pass in the Goal Assertion and KB.
+        # If there is, return a sequence of actions from start to goal using extractActionSequence.
+        # Here, Goal Assertion is the expression asserting that Pacman is at the goal at timestep t.
+        # Check if the model exists and return the asked sequence of actions.
+        if model != False:
+            return extractActionSequence(model, actions)
+
     "*** END YOUR CODE HERE ***"
+    return None
 
 #______________________________________________________________________________
 # QUESTION 5
