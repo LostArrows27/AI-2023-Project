@@ -105,7 +105,6 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    "*** YOUR CODE HERE ***"
     queue = util.Queue()
     queue.push((problem.getStartState(), [], 0))
     visited = set()
@@ -124,6 +123,20 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    pq = util.PriorityQueue()
+    pq.push((problem.getStartState(), [], 0), 0)
+    visited = set()
+    while not pq.isEmpty():
+        current_state, actions, current_cost = pq.pop()
+        if problem.isGoalState(current_state):
+            return actions
+        if current_state not in visited:
+            visited.add(current_state)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                new_actions = actions + [action]
+                new_cost = current_cost + cost
+                pq.push((next_state, new_actions, new_cost), new_cost)
+    return []
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -136,6 +149,22 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    pq = util.PriorityQueue()
+    start_state = problem.getStartState()
+    pq.push((start_state, [], 0), heuristic(start_state, problem))
+    visited = set()
+    while not pq.isEmpty():
+        current_state, actions, current_cost = pq.pop()
+        if problem.isGoalState(current_state):
+            return actions
+        if current_state not in visited:
+            visited.add(current_state)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                new_actions = actions + [action]
+                new_cost = current_cost + cost
+                heuristic_cost = new_cost + heuristic(next_state, problem)
+                pq.push((next_state, new_actions, new_cost), heuristic_cost)
+    return []
     util.raiseNotDefined()
 
 
