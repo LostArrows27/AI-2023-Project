@@ -67,6 +67,17 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.batch_size = 200
+        self.learning_rate = 0.05
+        self.w1 = nn.Parameter(1, 512)
+        self.b1 = nn.Parameter(1, 512)
+        self.w2 = nn.Parameter(512, 256)
+        self.b2 = nn.Parameter(1, 256)
+        self.w3 = nn.Parameter(256, 128)
+        self.b3 = nn.Parameter(1, 128)
+        self.w4 = nn.Parameter(128, 1)
+        self.b4 = nn.Parameter(1, 1)
+        self.weights = [self.w1, self.b1, self.w2, self.b2, self.w3, self.b3, self.w4, self.b4]
 
     def run(self, x):
         """
@@ -78,6 +89,18 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        linear1 = nn.Linear(x, self.w1)
+        bias1 = nn.AddBias(linear1, self.b1)
+        relu1 = nn.ReLU(bias1)
+        linear2 = nn.Linear(relu1, self.w2)
+        bias2 = nn.AddBias(linear2, self.b2)
+        relu2 = nn.ReLU(bias2)
+        linear3 = nn.Linear(relu2, self.w3)
+        bias3 = nn.AddBias(linear3, self.b3)
+        relu3 = nn.ReLU(bias3)
+        linear4 = nn.Linear(relu3, self.w4)
+        out = nn.AddBias(linear4, self.b4)
+        return out
 
     def get_loss(self, x, y):
         """
@@ -90,12 +113,22 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        y_pred = self.run(x)
+        return nn.SquareLoss(y_pred, y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        loss = 0.69
+        while loss >= 0.019:
+            for x, y in dataset.iterate_once(self.batch_size):
+                loss = self.get_loss(x, y)
+                grads = nn.gradients(loss, self.weights)
+                for i in range(len(self.weights)):
+                    self.weights[i].update(grads[i], -self.learning_rate)
+            loss = nn.as_scalar(loss)
 
 class DigitClassificationModel(object):
     """
