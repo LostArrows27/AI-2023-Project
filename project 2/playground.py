@@ -1,3 +1,3 @@
 from logicPlan import *
 
-print(atMostOne())
+print(disjoin(None))
