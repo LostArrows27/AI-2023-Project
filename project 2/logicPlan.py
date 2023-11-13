@@ -555,9 +555,10 @@ def localization(problem, agent) -> Generator:
     KB = []
 
     "*** BEGIN YOUR CODE HERE ***"
-    if ((x ,y) not in walls_list): KB.append(~PropSymbolExpr(wall_str,x, y))
-    else: KB.append(PropSymbolExpr(wall_str,x, y))
-
+    for (x, y) in all_coords:
+        if ((x, y) not in walls_list): KB.append(~logic.PropSymbolExpr(wall_str, x, y))
+        else: KB.append(logic.PropSymbolExpr(wall_str, x, y))
+    
 
 
     for t in range(agent.num_timesteps):
@@ -639,9 +640,23 @@ def slam(problem, agent) -> Generator:
     KB.append(conjoin(outer_wall_sent))
 
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    KB.append(PropSymbolExpr(pacman_str, pac_x_0, pac_y_0, time = 0))
+    
+    known_map[pac_x_0][pac_y_0] = 0
+    KB.append(~PropSymbolExpr(wall_str, pac_x_0, pac_y_0))
 
     for t in range(agent.num_timesteps):
+        KB.append(pacphysicsAxioms(t, all_coords, non_outer_wall_coords, known_map, SLAMSensorAxioms, SLAMSuccessorAxioms))
+        KB.append(PropSymbolExpr(agent.actions[t], time = t))
+        KB.append(numAdjWallsPerceptRules(t, agent.getPercepts()))
+        
+        possible_locations = []
+        for wall in non_outer_wall_coords:
+            findProvableWallLocations(KB, wall, known_map)
+            
+            findPossibleLocations(KB, t, wall, possible_locations)
+        
+        agent.moveToNextState(agent.actions[t])
         "*** END YOUR CODE HERE ***"
         yield (known_map, possible_locations)
 
