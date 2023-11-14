@@ -30,7 +30,7 @@ def shopSmart(orderList, fruitShops):
         fruitShops: List of FruitShops
     """
     "*** YOUR CODE HERE ***"
-    min = 100000
+    min = 1e9
     bestShop = None
     for shop in fruitShops:
         if shop.getPriceOfOrder(orderList) < min:
