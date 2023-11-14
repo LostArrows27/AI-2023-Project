@@ -36,12 +36,11 @@ def buyLotsOfFruit(orderList):
     """
     totalCost = 0.0
     "*** YOUR CODE HERE ***"
-    for i in range(len(orderList)):
-        if orderList[i][0] in fruitPrices:
-            totalCost += orderList[i][1] * fruitPrices[orderList[i][0]]
+    for fruit, numPounds in orderList:
+        if fruit in fruitPrices:
+            totalCost += fruitPrices[fruit] * numPounds
         else:
-            print("Fruit not found")
-            return None
+            print("Error: Fruit not found")
     return totalCost
 
 
