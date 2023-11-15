@@ -237,6 +237,17 @@ class LanguageIDModel(object):
 
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.batch_size = 20
+        self.learning_rate = 0.05
+        self.W = nn.Parameter(47, 40)
+        self.W_hidden = nn.Parameter(40, 40)
+        self.w1 = nn.Parameter(40, 20)
+        self.b1 = nn.Parameter(1, 20)
+        self.w2 = nn.Parameter(20, 10)
+        self.b2 = nn.Parameter(1, 10)
+        self.w3 = nn.Parameter(10, 5)
+        self.b3 = nn.Parameter(1, 5)
+        self.weights = [self.W, self.W_hidden, self.w1, self.b1, self.w2, self.b2, self.w3, self.b3]
 
     def run(self, xs):
         """
@@ -268,7 +279,20 @@ class LanguageIDModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
-
+        out = nn.Linear(xs[0], self.W)
+        out = nn.ReLU(out)
+        for i in range(len(xs) - 1):
+            out = nn.Add(nn.Linear(xs[i + 1], self.W), nn.Linear(out, self.W_hidden))
+            out = nn.ReLU(out)
+        out = nn.Linear(out, self.w1)
+        out = nn.AddBias(out, self.b1)
+        out = nn.ReLU(out)
+        out = nn.Linear(out, self.w2)
+        out = nn.AddBias(out, self.b2)
+        out = nn.ReLU(out)
+        out = nn.Linear(out, self.w3)
+        out = nn.AddBias(out, self.b3)
+        return out
     def get_loss(self, xs, y):
         """
         Computes the loss for a batch of examples.
@@ -284,9 +308,20 @@ class LanguageIDModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        y_pred = self.run(xs)
+        return nn.SoftmaxLoss(y_pred, y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        valid_acc = 0
+        while valid_acc <= 0.85:
+            for x, y in dataset.iterate_once(self.batch_size):
+                loss = self.get_loss(x, y)
+                grads = nn.gradients(loss, self.weights)
+                for i in range(len(self.weights)):
+                    self.weights[i].update(grads[i], -self.learning_rate)
+            valid_acc = dataset.get_validation_accuracy()
+        
